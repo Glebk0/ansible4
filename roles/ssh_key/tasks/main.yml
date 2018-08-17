@@ -1,0 +1,22 @@
+---
+# tasks file for ssh_key
+- name: Generating ssh key
+  shell: ssh-keygen -b 2048 -t rsa -f ssh_keys/{{ user_name }}/{{ user_name }} -q -N ""
+
+- name: Converting rsa ssh key to pem ssh key
+  shell: |
+    openssl rsa -in ssh_keys/{{ user_name }}/{{ user_name }} -outform pem > ssh_keys/{{ user_name }}/{{ user_name }}.pem
+
+- name: Changing key-file permissions
+  file:
+    path: "ssh_keys/{{ user_name }}/{{ user_name }}.pem"
+    mode: 0600
+
+- name: Saving fact
+  copy:
+    content:
+      {
+       "Key generated for user": "{{ user_name }}"
+      }
+    dest: /etc/ansible/facts.d/ssh.fact
+  become: yes

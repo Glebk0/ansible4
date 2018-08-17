@@ -1,0 +1,6 @@
+- name: loading local facts
+  setup:
+    filter: ansible_local
+
+- include_tasks: java_install.yml
+  when: ansible_local.java is not defined or ansible_local.java.java_version != java_version
